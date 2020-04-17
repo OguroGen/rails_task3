@@ -1,6 +1,7 @@
 require "csv"
 
 namespace :import_csv do
+    
     desc"CSVファイルをインポート"
     
     task users: :environment do
@@ -14,16 +15,24 @@ namespace :import_csv do
                 name: row["name"],
                 age: row["age"],
                 address: row["address"]
-                }
+            }
         end
         
-        puts "インポート処理を開始"
+        puts "インポート処理を開始".red
         
         begin
-            User.create!(list)
-            puts "インポート完了"
+            
+            User.transaction do
+                User.create!(list)
+            end
+            
+            puts "インポート完了".green
+            
         rescue ActiveModel::UnknownAttributeError => invalid
-            puts "インポート失敗　:UnknownAttributeError"
-        end            
+            
+            puts "インポート失敗　:UnknownAttributeError".red
+            
+        end
+        
     end
 end
